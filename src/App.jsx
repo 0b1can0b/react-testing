@@ -144,7 +144,7 @@ const App = () => {
 
   const getComments = () => {
     // console.log("GETTING COMMENTS");
-    fetch("https://www.reddit.com/r/Cricket/comments/1acslkm/match_thread_1st_test_england_vs_india_day_4/.json?raw_json=1&limit=100", { cache: "no-store" })
+    fetch("https://www.reddit.com/r/Cricket/comments/1acslkm/match_thread_1st_test_england_vs_india_day_4/.json?raw_json=1&limit=500", { cache: "no-store" })
       .then((response) => response.json())
       .then((json) => {
         setComments((prev) => {
@@ -280,7 +280,7 @@ const App = () => {
       ) : (
         <div className="loading">--- No comments to load, Yet ---</div>
       )}
-      <div className="refresh-alert">--- Refreshs about every 3 to 5 seconds ---</div>
+      <div className="refresh-alert">--- Refreshes about every 3 to 5 seconds ---</div>
     </div>
   );
 };

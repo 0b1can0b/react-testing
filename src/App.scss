@@ -18,15 +18,15 @@ a {
     zoom: 0.75;
   }
 
-  .loading,
-  .refresh-alert {
+  > .loading,
+  > .refresh-alert {
     text-transform: capitalize;
     font-size: 20px;
     font-weight: 800;
     text-align: center;
   }
 
-  .comments {
+  > .comments {
     display: flex;
     flex-direction: column;
     // gap: 15px;
@@ -39,13 +39,13 @@ a {
       scroll-margin-top: 12.5px;
       transition: 0.25s linear;
 
-      &.is-new {
+      > .is-new {
         display: grid;
         // transition: 0.15s ease-out;
         // animation: grid-ani 0.4s cubic-bezier(0, 0.55, 0.45, 1) forwards;
         animation: grid-ani 0.25s linear forwards;
 
-        .comment-container-inner {
+        > .comment-container-inner {
           overflow: hidden;
         }
       }
@@ -58,30 +58,30 @@ a {
         }
       }
       &:last-child {
-        .comment-container-inner {
+        > .comment-container-inner {
           margin-bottom: 0px;
         }
       }
-      .comment-container-inner {
+      > .comment-container-inner {
         margin-bottom: 15px;
 
-        .comment {
+        > .comment {
           display: flex;
           // gap: 15px;
           // background-color: hsl(225 15% 15%);
           // padding: 10px;
 
-          .left {
+          > .left {
             min-width: 10px;
             background-color: hsl(calc(var(--m) * 30 + 225) 50% 50%);
           }
-          .right {
+          > .right {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 10px;
 
-            .header {
+            > .header {
               display: flex;
               align-items: center;
               gap: 25px;
@@ -92,26 +92,26 @@ a {
                 zoom: 0.75;
               }
 
-              .user {
+              > .user {
                 display: flex;
                 align-items: center;
                 gap: 15px;
                 margin-right: auto;
                 padding-right: 25px;
 
-                .name {
+                > .name {
                   color: hsl(225 100% 95%);
                   font-weight: 800;
                   font-size: 17.5px;
                 }
-                .flair {
+                > .flair {
                   display: flex;
                   align-items: center;
-                  gap: 10px;
+                  gap: 5px;
                   color: hsl(225 15% 75%);
 
-                  .flair-item {
-                    img {
+                  > .flair-item {
+                    > img {
                       --s: 15px;
                       width: var(--s);
                       height: var(--s);
@@ -119,55 +119,55 @@ a {
                   }
                 }
               }
-              .replies-count {
+              > .replies-count {
                 color: hsl(225 25% 85%);
                 font-family: JetBrains Mono;
               }
-              .voting {
+              > .voting {
                 display: flex;
                 align-items: center;
                 gap: 7.5px;
 
-                .upvote,
-                .downvote {
+                > .upvote,
+                > .downvote {
                   --s: 15px;
                   width: var(--s);
                   height: var(--s);
                 }
-                .upvote {
+                > .upvote {
                   border-left: calc(var(--s) / 2) solid transparent;
                   border-right: calc(var(--s) / 2) solid transparent;
                   border-bottom: calc(var(--s) / 2) solid hsl(225 25% 85%);
                   translate: 0 calc(-25%);
                 }
-                .score {
+                > .score {
                   font-weight: 800;
                   // font-size: 20px;
                   color: hsl(225 25% 85%);
                   font-family: JetBrains Mono;
                   translate: 0 0.5px;
                 }
-                .downvote {
+                > .downvote {
                   border-left: calc(var(--s) / 2) solid transparent;
                   border-right: calc(var(--s) / 2) solid transparent;
                   border-top: calc(var(--s) / 2) solid hsl(225 25% 85%);
                   translate: 0 calc(25%);
                 }
               }
-              .created {
+              > .created {
                 display: flex;
                 align-items: center;
                 gap: 5px;
                 font-family: JetBrains Mono;
 
-                .origial {
+                > .origial {
                   color: hsl(225 15% 75%);
                 }
-                .edited {
+                > .edited {
                   color: hsl(225 15% 65%);
                 }
               }
-              .open-in-reddit {
+              > .open-in-reddit {
                 transition: 0.15s ease-out;
                 font-size: 17.5px;
 
@@ -176,9 +176,9 @@ a {
                 }
               }
             }
-            .body {
+            > .body {
               padding: 0 10px;
-              .md {
+              > .md {
                 font-weight: 400;
                 line-height: 1.25;
                 color: hsl(225 15% 90%);
@@ -200,7 +200,7 @@ a {
             }
           }
         }
-        .replies {
+        > .replies {
           display: flex;
           flex-direction: column;
           // gap: 15px;

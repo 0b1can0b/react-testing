@@ -135,7 +135,7 @@ const Comment = ({ commentData, commentDepth }) => {
                 <div className="origial">{timeAgo(finalCommentData.data.created * 1000)}</div>
                 {finalCommentData.data.edited ? <div className="edited">(edited: {timeAgo(finalCommentData.data.edited * 1000)})</div> : ""}
               </div>
-              <a href={"https://www.reddit.com/" + finalCommentData.data.permalink} target="_blank" className="open-in-reddit">
+              <a href={"https://www.reddit.com" + finalCommentData.data.permalink} target="_blank" className="open-in-reddit">
                 <RedditIcon />
               </a>
             </div>
@@ -239,17 +239,17 @@ const App = () => {
         // $("html, body").animate({ scrollTop: window.scrollY + [...document.querySelectorAll(".comment-container.is-new > .comment-container-inner")].map((newComment) => newComment.scrollHeight * 1 + 15 + 5).reduce((a, b) => a + b, 0) }, 0, "linear");
         $("html, body").animate(
           {
-            scrollTop:
-              window.scrollY +
-              [...document.querySelectorAll(".comment-container.is-new > .comment-container-inner")]
-                .map((newComment) => {
-                  return newComment.scrollHeight * 1 + 15 + 5;
-                })
-                .reduce((a, b) => a + b, 0),
+            scrollTop: document.body.scrollHeight + 100,
+            // window.scrollY +
+            // [...document.querySelectorAll(".comment-container.is-new > .comment-container-inner")]
+            //   .map((newComment) => {
+            //     return newComment.scrollHeight * 1 + 15 + 5;
+            //   })
+            //   .reduce((a, b) => a + b, 0),
           },
           250
         );
-      }, 250);
+      }, 0);
     }
 
     const timeout = setTimeout(() => getComments(), 3000);

@@ -1,5 +1,5 @@
 body {
-  background-color: hsl(225 10% 15%);
+  background-color: hsl(225 10% 17.5%);
 }
 a {
   color: inherit;
@@ -86,7 +86,7 @@ a {
               align-items: center;
               gap: 25px;
               padding: 5px 10px;
-              background-color: hsl(calc(var(--m) * 30 + 225) 20% 20%);
+              background-color: hsl(calc(var(--m) * 30 + 225) 20% 22.5%);
 
               @media (max-width: 800px) {
                 zoom: 0.75;

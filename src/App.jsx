@@ -144,7 +144,7 @@ const App = () => {
 
   const getComments = () => {
     // console.log("GETTING COMMENTS");
-    fetch("https://www.reddit.com/r/Cricket/comments/1acslkm/match_thread_1st_test_england_vs_india_day_4/.json?raw_json=1&limit=500", { cache: "no-store" })
+    fetch(`https://www.reddit.com/${window.location.pathname}.json?raw_json=1&limit=500&sort=new`, { cache: "no-store" })
       .then((response) => response.json())
       .then((json) => {
         setComments((prev) => {
@@ -180,7 +180,7 @@ const App = () => {
     if (comments.length === 0) {
       getComments();
     }
-    if (window.scrollY + window.innerHeight > document.body.offsetHeight - 250) {
+    if (window.scrollY + window.innerHeight > document.body.offsetHeight - 125) {
       setTimeout(() => {
         // [...document.querySelectorAll(".comment-container.is-new")].at(-1)?.scrollIntoView({ behavior: "smooth" });
         $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 250, "linear");

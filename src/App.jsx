@@ -49,6 +49,13 @@ function timeAgo(input) {
 //   }
 // }
 
+const RefreshIcon = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M4 20v-2h2.75l-.4-.35q-1.3-1.15-1.825-2.625T4 12.05q0-2.775 1.662-4.938T10 4.25v2.1Q8.2 7 7.1 8.563T6 12.05q0 1.125.425 2.188T7.75 16.2l.25.25V14h2v6zm10-.25v-2.1q1.8-.65 2.9-2.212T18 11.95q0-1.125-.425-2.187T16.25 7.8L16 7.55V10h-2V4h6v2h-2.75l.4.35q1.225 1.225 1.788 2.663T20 11.95q0 2.775-1.662 4.938T14 19.75"></path>
+    </svg>
+  );
+};
 const RedditIcon = () => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512">
@@ -65,18 +72,33 @@ const Comment = ({ commentData, commentDepth }) => {
       console.log(commentData);
     }
   };
+  const [finalCommentData, setFinalCommentData] = useState(commentData);
+  const [IsRefreshingComment, setIsRefreshingComment] = useState(false);
+  const refreshComment = () => {
+    setIsRefreshingComment(true);
+    console.log(commentData.data.permalink);
+    fetch(`https://www.reddit.com${commentData.data.permalink}.json?raw_json=1&limit=500`, { cache: "no-store" })
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json.at(1).data.children.at(0));
+        setFinalCommentData((prev) => {
+          return { ...prev, data: json.at(1).data.children.at(0).data };
+        });
+        setIsRefreshingComment(false);
+      });
+  };
   return (
-    <div className={commentData.IsNew ? "comment-container is-new" : "comment-container"} style={{ "--m": commentDepth }}>
+    <div className={finalCommentData.IsNew ? "comment-container is-new" : finalCommentData.IsVeryOld ? "comment-container is-very-old" : "comment-container"} style={{ "--depth": commentDepth }} id={finalCommentData.data.id}>
       <div className="comment-container-inner">
         <div className="comment" onClick={onClick}>
           <div className="left"></div>
           <div className="right">
             <div className="header">
               <div className="user">
-                <div className="name">{commentData.data.author}</div>
-                {commentData.data.author_flair_richtext?.length > 0 ? (
+                <div className="name">{finalCommentData.data.author}</div>
+                {finalCommentData.data.author_flair_richtext?.length > 0 ? (
                   <div className="flair">
-                    {commentData.data.author_flair_richtext.map((e, i) => {
+                    {finalCommentData.data.author_flair_richtext.map((e, i) => {
                       return e.t !== " " ? (
                         <div className="flair-item" key={i}>
                           {e.u ? <img src={e.u} alt={e.u} /> : e.t}
@@ -90,9 +112,12 @@ const Comment = ({ commentData, commentDepth }) => {
                   ""
                 )}
               </div>
-              {commentData.data.replies?.data?.children.length > 0 ? (
+              <div className={IsRefreshingComment ? "refresh-comment is-refreshing-comment" : "refresh-comment"} onClick={refreshComment}>
+                <RefreshIcon />
+              </div>
+              {finalCommentData.data.replies?.data?.children.length > 0 ? (
                 <div className="replies-count">
-                  {commentData.data.replies.data.children.length} {commentData.data.replies.data.children.length === 1 ? "Reply" : "Replies"}
+                  {finalCommentData.data.replies.data.children.length} {finalCommentData.data.replies.data.children.length === 1 ? "Reply" : "Replies"}
                 </div>
               ) : (
                 ""
@@ -102,34 +127,38 @@ const Comment = ({ commentData, commentDepth }) => {
                 <div className="score">
                   {Intl.NumberFormat("en-US", {
                     notation: "compact",
-                  }).format(commentData.data.score)}
+                  }).format(finalCommentData.data.score)}
                 </div>
                 <div className="downvote"></div>
               </div>
               <div className="created">
-                <div className="origial">{timeAgo(commentData.data.created * 1000)}</div>
-                {commentData.data.edited ? <div className="edited">(edited: {timeAgo(commentData.data.edited * 1000)})</div> : ""}
+                <div className="origial">{timeAgo(finalCommentData.data.created * 1000)}</div>
+                {finalCommentData.data.edited ? <div className="edited">(edited: {timeAgo(finalCommentData.data.edited * 1000)})</div> : ""}
               </div>
-              <a href={"https://www.reddit.com/" + commentData.data.permalink} target="_blank" className="open-in-reddit">
+              <a href={"https://www.reddit.com/" + finalCommentData.data.permalink} target="_blank" className="open-in-reddit">
                 <RedditIcon />
               </a>
             </div>
-            <div className="body" dangerouslySetInnerHTML={{ __html: commentData.data.body_html }}></div>
+            <div className="body" dangerouslySetInnerHTML={{ __html: finalCommentData.data.body_html }}></div>
           </div>
         </div>
-        {commentData.data.replies ? (
-          <div className="replies">
-            {commentData.data.replies.data.children.map((reply, replyIndex) =>
-              reply.kind === "t1" ? (
-                <Comment key={replyIndex} commentData={reply} commentDepth={commentDepth + 1} />
-              ) : reply.kind === "more" ? (
-                <div key={replyIndex} className="more-replies">
-                  MORE REPLIES
-                </div>
-              ) : (
-                ""
-              )
-            )}
+        {finalCommentData.data.replies ? (
+          <div className={IsRefreshingComment ? "replies-container is-refreshing-comment" : "replies-container"}>
+            <div className="replies">
+              <div className="replies-inner">
+                {finalCommentData.data.replies.data.children.map((reply, replyIndex) =>
+                  reply.kind === "t1" ? (
+                    <Comment key={replyIndex} commentData={reply} commentDepth={commentDepth + 1} />
+                  ) : reply.kind === "more" ? (
+                    <div key={replyIndex} className="more-replies">
+                      ~~~~~ MORE REPLIES
+                    </div>
+                  ) : (
+                    ""
+                  )
+                )}
+              </div>
+            </div>
           </div>
         ) : (
           ""
@@ -144,25 +173,45 @@ const App = () => {
 
   const getComments = () => {
     // console.log("GETTING COMMENTS");
-    fetch(`https://www.reddit.com/${window.location.pathname}.json?raw_json=1&limit=500&sort=new`, { cache: "no-store" })
+    fetch(`https://www.reddit.com/${window.location.pathname}.json?raw_json=1&limit=100&sort=new`, { cache: "no-store" })
       .then((response) => response.json())
       .then((json) => {
         setComments((prev) => {
-          const tempComments = json
-            .at(1)
-            .data.children.reverse()
+          const fetchedComments = json.at(1).data.children;
+          // const fetchedCommentsIds = fetchedComments.map((comment) => comment.data.id);
+
+          // const tempOldNotUpdatedComments = prev
+          //   .filter((tempComment) => {
+          //     return !fetchedCommentsIds.includes(tempComment.data.id);
+          //   })
+          //   .map((e) => {
+          //     return { ...e, IsNew: false, IsVeryOld: true };
+          //   });
+
+          // const tempOldUpdatedComments = fetchedComments
+          //   .filter((tempComment) => tempComment.kind === "t1")
+          //   .filter((tempComment) => {
+          //     return prev.map((comment) => comment.data.id).includes(tempComment.data.id);
+          //   })
+          //   .reverse()
+          //   .map((e) => {
+          //     return { ...e, IsNew: false };
+          //   });
+          const tempNewComments = fetchedComments
+            .filter((tempComment) => tempComment.kind === "t1")
             .filter((tempComment) => {
               return !prev.map((comment) => comment.data.id).includes(tempComment.data.id);
             })
-            .filter((tempComment) => tempComment.kind === "t1")
-            .map((e) => {
-              return { ...e, IsNew: true };
+            .reverse()
+            .map((e, i) => {
+              return { ...e, IsNew: true, index: i };
             });
           const tempPrev = prev.map((e) => {
             return { ...e, IsNew: false };
           });
-          return [...tempPrev, ...tempComments];
-          // return [...tempComments, ...tempPrev];
+          return [...tempPrev, ...tempNewComments];
+          // return [...tempOldNotUpdatedComments, ...tempOldUpdatedComments, ...tempNewComments];
+          // return [...tempNewComments, ...tempPrev];
         });
       });
   };
@@ -171,22 +220,39 @@ const App = () => {
   useEffect(() => {
     if (comments.length > 0 && DoScrollToBottom) {
       // console.log("SCROLLED TO BOTTOM");
-      setTimeout(() => {
-        // [...document.querySelectorAll(".comment-container.is-new")].at(-1)?.scrollIntoView({ behavior: "smooth" });
-        $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 250);
-      }, 800);
+      // setTimeout(() => {
+      //   // [...document.querySelectorAll(".comment-container.is-new")].at(-1)?.scrollIntoView({ behavior: "smooth" });
+      //   $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 500);
+      // }, 500);
+      $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 0);
       setDoScrollToBottom(false);
     }
+
     if (comments.length === 0) {
       getComments();
     }
-    if (window.scrollY + window.innerHeight > document.body.offsetHeight - 125) {
+
+    if (window.scrollY + window.innerHeight > document.body.offsetHeight - 150) {
       setTimeout(() => {
         // [...document.querySelectorAll(".comment-container.is-new")].at(-1)?.scrollIntoView({ behavior: "smooth" });
-        $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 250, "linear");
-      }, 50);
+        // [...document.querySelectorAll(".comment-container.is-new")].at(-1)?.scrollIntoView();
+        // $("html, body").animate({ scrollTop: window.scrollY + [...document.querySelectorAll(".comment-container.is-new > .comment-container-inner")].map((newComment) => newComment.scrollHeight * 1 + 15 + 5).reduce((a, b) => a + b, 0) }, 0, "linear");
+        $("html, body").animate(
+          {
+            scrollTop:
+              window.scrollY +
+              [...document.querySelectorAll(".comment-container.is-new > .comment-container-inner")]
+                .map((newComment) => {
+                  return newComment.scrollHeight * 1 + 15 + 5;
+                })
+                .reduce((a, b) => a + b, 0),
+          },
+          250
+        );
+      }, 250);
     }
-    const timeout = setTimeout(() => getComments(), 500);
+
+    const timeout = setTimeout(() => getComments(), 3000);
     // const interval = setInterval(getComments, 2000);
     return () => {
       clearTimeout(timeout);
@@ -271,7 +337,7 @@ const App = () => {
         <div className="comments">
           {comments.map((commentData, commentDataIndex) => {
             if (commentData.kind !== "more") {
-              return <Comment key={commentDataIndex} commentData={commentData} commentDepth={1} />;
+              return <Comment key={commentDataIndex} commentData={commentData} commentDepth={0} />;
             } else {
               return `${commentData.data.count} More Comments`;
             }

@@ -219,13 +219,21 @@ const App = () => {
   const [DoScrollToBottom, setDoScrollToBottom] = useState(true);
   useEffect(() => {
     if (comments.length > 0 && DoScrollToBottom) {
-      // console.log("SCROLLED TO BOTTOM");
-      // setTimeout(() => {
-      //   // [...document.querySelectorAll(".comment-container.is-new")].at(-1)?.scrollIntoView({ behavior: "smooth" });
-      //   $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 500);
-      // }, 500);
-      $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 0);
-      setDoScrollToBottom(false);
+      setTimeout(() => {
+        // console.log("SCROLLED TO BOTTOM");
+        // setTimeout(() => {
+        //   // [...document.querySelectorAll(".comment-container.is-new")].at(-1)?.scrollIntoView({ behavior: "smooth" });
+        //   $("html, body").animate({ scrollTop: [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop }, 500);
+        // }, 500);
+        $("html, body").animate(
+          {
+            scrollTop: document.body.scrollHeight + 150,
+            // [...document.querySelectorAll(".comment-container")].at(-1)?.offsetTop
+          },
+          500
+        );
+        setDoScrollToBottom(false);
+      }, 250);
     }
 
     if (comments.length === 0) {
@@ -239,7 +247,7 @@ const App = () => {
         // $("html, body").animate({ scrollTop: window.scrollY + [...document.querySelectorAll(".comment-container.is-new > .comment-container-inner")].map((newComment) => newComment.scrollHeight * 1 + 15 + 5).reduce((a, b) => a + b, 0) }, 0, "linear");
         $("html, body").animate(
           {
-            scrollTop: document.body.scrollHeight + 100,
+            scrollTop: document.body.scrollHeight + 150,
             // window.scrollY +
             // [...document.querySelectorAll(".comment-container.is-new > .comment-container-inner")]
             //   .map((newComment) => {

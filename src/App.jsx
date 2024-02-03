@@ -476,7 +476,7 @@ const Subreddit = () => {
   };
   useEffect(() => {
     if (IsFetching) {
-      fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=15&after=${nextPageID}`, { cache: "no-store" })
+      fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=50&after=${nextPageID}`, { cache: "no-store" })
         .then((response) => response.json())
         .then((json) => {
           setNextPageID(json.data.after);

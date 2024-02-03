@@ -409,7 +409,7 @@ const Comments = () => {
 
   useEffect(() => {
     const int = setInterval(() => {
-      [...document.querySelectorAll(".comments > .comment-container")]
+      [...document.querySelectorAll(".comment")]
         .filter((e) => {
           const bcr = e.getBoundingClientRect();
           const t = bcr.top;
@@ -565,6 +565,7 @@ const App = () => {
         <Route path="r/:subreddit" element={<Subreddit />} />
         <Route path="r/:subreddit/:sort" element={<Subreddit />} />
         <Route path="r/:subreddit/comments/:postId/:postString" element={<Comments />} />
+        <Route path="r/:subreddit/comments/:postId/:postString/:commentId" element={<Comments />} />
         <Route path="" element={<Home />} />
         <Route path="*" element="404. check url" />
       </Routes>

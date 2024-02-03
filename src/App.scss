@@ -17,9 +17,17 @@ a {
   font-size: 15px;
   // padding-bottom: 100px;
 
-  // @media (max-width: 800px) {
-  //   zoom: 0.85;
-  // }
+  @media (max-width: 800px) {
+    padding-inline: 10px;
+    zoom: 0.85;
+  }
+  @media (max-width: 500px) {
+    zoom: 0.75;
+  }
+
+  > .home > a {
+    color: hsl(225 75% 75%);
+  }
 
   > .loading,
   > .refresh-alert {

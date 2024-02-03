@@ -536,6 +536,14 @@ const Subreddit = () => {
   );
 };
 
+const Home = () => {
+  return (
+    <div className="home">
+      this is homepage, there's thing in it. <a href="/r/cricket">go to /r/cricket</a> or type any /r/subreddit in url bar
+    </div>
+  );
+};
+
 const App = () => {
   return (
     <div className="App">
@@ -543,6 +551,7 @@ const App = () => {
         <Route path="r/:subreddit" element={<Subreddit />} />
         <Route path="r/:subreddit/:sort" element={<Subreddit />} />
         <Route path="r/:subreddit/comments/:postId/:postString" element={<Comments />} />
+        <Route path="" element={<Home />} />
         <Route path="*" element="404. check url" />
       </Routes>
       {/* {subWithSortRegex.test(path) && ["new", "hot"].includes(path.split("/").at(-2)) ? <Subreddit sort={path.split("/").at(-2)} /> : ""}

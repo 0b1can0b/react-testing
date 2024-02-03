@@ -459,7 +459,7 @@ const Subreddit = () => {
   const [nextPageID, setNextPageID] = useState("");
 
   useEffect(() => {
-    fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=50`, { cache: "no-store" })
+    fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=15`, { cache: "no-store" })
       .then((response) => response.json())
       .then((json) => {
         setNextPageID(json.data.after);
@@ -476,7 +476,7 @@ const Subreddit = () => {
   };
   useEffect(() => {
     if (IsFetching) {
-      fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=50&after=${nextPageID}`, { cache: "no-store" })
+      fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=15&after=${nextPageID}`, { cache: "no-store" })
         .then((response) => response.json())
         .then((json) => {
           setNextPageID(json.data.after);
@@ -539,7 +539,25 @@ const Subreddit = () => {
 const Home = () => {
   return (
     <div className="home">
-      this is homepage, there's thing in it. <a href="/r/cricket">go to /r/cricket</a> or type any /r/subreddit in url bar
+      <p>
+        this is homepage, there's nothing in it except this text. <a href="/r/cricket">go to /r/cricket</a> or type any /r/subreddit in url bar
+      </p>
+
+      <p>there are sort buttons (new, hot) to sort the subreddit posts, the comments will always be sorted by new (cause you know... "live-thread")</p>
+
+      <p>it would get new comments every (3 seconds + the time to fetch the request) so thats around 3.5 to 4.5 seconds</p>
+
+      <p>the comments that are in the view would keep refreshing every 5 seconds so we don't have to keep pressing the refresh button</p>
+
+      <p>keyboard navigation is available as well. "f" for next comment, "r" for previous and "e" would open the first comment visible in normal "reddit.com" so you can reply or vote there</p>
+
+      <p>"if" you see a blank page it means that it's some bug and i didn't map data correctly :/</p>
+
+      <p>or if it was working just fine and suddenly shows blank page and it keeps showing blank page for few minutes then reddit might have rate limited you, i think it undoes that in few minutes... but this should only happen if we're making too many requests per second (currently i check it's somewhat 80-100 per minute and i haven't seen issues so it should be fine)</p>
+
+      <p>also reload the page once a while if you're not planning on reading older comments, just so there aren't like 1000 comments at the same time (for performance's sake)</p>
+
+      <p>thanks :)</p>
     </div>
   );
 };

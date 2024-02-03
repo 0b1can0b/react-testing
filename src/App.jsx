@@ -121,7 +121,7 @@ const Comment = ({ commentData, commentDepth }) => {
                 const btn = e.querySelector(".refresh-comment");
                 btn.click();
               });
-          }, 0);
+          }, 25);
           setFinalCommentData((prev) => {
             return { ...prev, data: json.at(1).data.children.at(0).data };
           });
@@ -187,7 +187,7 @@ const Comment = ({ commentData, commentDepth }) => {
                   {timeAgo(finalCommentData.data.created * 1000)}
                 </div>
                 {finalCommentData.data.edited ? (
-                  <div className="edited" style={{ width: `${timeAgo(finalCommentData.data.edited * 1000).length * 10}px` }}>
+                  <div className="edited" style={{ width: `${(timeAgo(finalCommentData.data.edited * 1000).length + 2) * 10}px` }}>
                     ({timeAgo(finalCommentData.data.edited * 1000)})
                   </div>
                 ) : (

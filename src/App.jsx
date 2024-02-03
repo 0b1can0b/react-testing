@@ -3,31 +3,56 @@ import "./App.scss";
 // import * as tempCricData from "./cric.json";
 import { useEffect, useState } from "react";
 import $ from "jquery";
+import { Route, Routes, useParams, Outlet, useNavigate } from "react-router-dom";
 
 function timeAgo(input) {
   var seconds = Math.floor((new Date() - input) / 1000);
   var interval = seconds / 31536000;
   if (interval > 1) {
-    return Math.floor(interval) + " years";
+    return Math.floor(interval) + "y";
   }
   interval = seconds / 2592000;
   if (interval > 1) {
-    return Math.floor(interval) === 1 ? Math.floor(interval) + " month" : Math.floor(interval) + " months";
+    return Math.floor(interval) + "M";
   }
   interval = seconds / 86400;
   if (interval > 1) {
-    return Math.floor(interval) === 1 ? Math.floor(interval) + " day" : Math.floor(interval) + " days";
+    return Math.floor(interval) + "d";
   }
   interval = seconds / 3600;
   if (interval > 1) {
-    return Math.floor(interval) === 1 ? Math.floor(interval) + " hour" : Math.floor(interval) + " hours";
+    return Math.floor(interval) + "h";
   }
   interval = seconds / 60;
   if (interval > 1) {
-    return Math.floor(interval) === 1 ? Math.floor(interval) + " minute" : Math.floor(interval) + " minutes";
+    return Math.floor(interval) + "m";
   }
-  return Math.floor(seconds) === 1 ? Math.floor(seconds) + " second" : Math.floor(seconds) + " seconds";
+  return Math.floor(seconds) + "s";
 }
+// function timeAgo(input) {
+//   var seconds = Math.floor((new Date() - input) / 1000);
+//   var interval = seconds / 31536000;
+//   if (interval > 1) {
+//     return Math.floor(interval) + " years";
+//   }
+//   interval = seconds / 2592000;
+//   if (interval > 1) {
+//     return Math.floor(interval) === 1 ? Math.floor(interval) + " month" : Math.floor(interval) + " months";
+//   }
+//   interval = seconds / 86400;
+//   if (interval > 1) {
+//     return Math.floor(interval) === 1 ? Math.floor(interval) + " day" : Math.floor(interval) + " days";
+//   }
+//   interval = seconds / 3600;
+//   if (interval > 1) {
+//     return Math.floor(interval) === 1 ? Math.floor(interval) + " hour" : Math.floor(interval) + " hours";
+//   }
+//   interval = seconds / 60;
+//   if (interval > 1) {
+//     return Math.floor(interval) === 1 ? Math.floor(interval) + " minute" : Math.floor(interval) + " minutes";
+//   }
+//   return Math.floor(seconds) === 1 ? Math.floor(seconds) + " second" : Math.floor(seconds) + " seconds";
+// }
 // function timeAgo(input) {
 //   const date = input instanceof Date ? input : new Date(input);
 //   const formatter = new Intl.RelativeTimeFormat("en");
@@ -75,20 +100,37 @@ const Comment = ({ commentData, commentDepth }) => {
   const [finalCommentData, setFinalCommentData] = useState(commentData);
   const [IsRefreshingComment, setIsRefreshingComment] = useState(false);
   const refreshComment = () => {
+    if (IsRefreshingComment) return;
     setIsRefreshingComment(true);
-    console.log(commentData.data.permalink);
     fetch(`https://www.reddit.com${commentData.data.permalink}.json?raw_json=1&limit=500`, { cache: "no-store" })
       .then((response) => response.json())
       .then((json) => {
-        console.log(json.at(1).data.children.at(0));
-        setFinalCommentData((prev) => {
-          return { ...prev, data: json.at(1).data.children.at(0).data };
-        });
+        if (json.at(1).data.children.length > 0) {
+          setTimeout(() => {
+            [...document.querySelectorAll(`#${json.at(1).data.children.at(0).data.id} .comment-container`)]
+              .filter((e) => {
+                const bcr = e.getBoundingClientRect();
+                const t = bcr.top;
+                const b = bcr.bottom;
+                const h = window.innerHeight;
+                if (t > 0 && b < h + 200) return true;
+              })
+              .reverse()
+              .slice(0, 12)
+              .forEach((e) => {
+                const btn = e.querySelector(".refresh-comment");
+                btn.click();
+              });
+          }, 0);
+          setFinalCommentData((prev) => {
+            return { ...prev, data: json.at(1).data.children.at(0).data };
+          });
+        }
         setIsRefreshingComment(false);
       });
   };
   return (
-    <div className={finalCommentData.IsNew ? "comment-container is-new" : finalCommentData.IsVeryOld ? "comment-container is-very-old" : "comment-container"} style={{ "--depth": commentDepth }} id={finalCommentData.data.id}>
+    <div className={commentData.IsNew ? "comment-container is-new" : "comment-container"} style={{ "--depth": commentDepth }} id={finalCommentData.data.id}>
       <div className="comment-container-inner">
         <div className="comment" onClick={onClick}>
           <div className="left"></div>
@@ -115,16 +157,25 @@ const Comment = ({ commentData, commentDepth }) => {
               <div className={IsRefreshingComment ? "refresh-comment is-refreshing-comment" : "refresh-comment"} onClick={refreshComment}>
                 <RefreshIcon />
               </div>
-              {finalCommentData.data.replies?.data?.children.length > 0 ? (
+              {/* {finalCommentData.data.replies?.data?.children.length > 0 ? (
                 <div className="replies-count">
                   {finalCommentData.data.replies.data.children.length} {finalCommentData.data.replies.data.children.length === 1 ? "Reply" : "Replies"}
                 </div>
               ) : (
                 ""
-              )}
+              )} */}
               <div className="voting">
                 <div className="upvote"></div>
-                <div className="score">
+                <div
+                  className="score"
+                  style={{
+                    width: `${
+                      Intl.NumberFormat("en-US", {
+                        notation: "compact",
+                      }).format(finalCommentData.data.score).length * 10
+                    }px`,
+                  }}
+                >
                   {Intl.NumberFormat("en-US", {
                     notation: "compact",
                   }).format(finalCommentData.data.score)}
@@ -132,8 +183,16 @@ const Comment = ({ commentData, commentDepth }) => {
                 <div className="downvote"></div>
               </div>
               <div className="created">
-                <div className="origial">{timeAgo(finalCommentData.data.created * 1000)}</div>
-                {finalCommentData.data.edited ? <div className="edited">(edited: {timeAgo(finalCommentData.data.edited * 1000)})</div> : ""}
+                <div className="origial" style={{ width: `${timeAgo(finalCommentData.data.created * 1000).length * 10}px` }}>
+                  {timeAgo(finalCommentData.data.created * 1000)}
+                </div>
+                {finalCommentData.data.edited ? (
+                  <div className="edited" style={{ width: `${timeAgo(finalCommentData.data.edited * 1000).length * 10}px` }}>
+                    ({timeAgo(finalCommentData.data.edited * 1000)})
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
               <a href={"https://www.reddit.com" + finalCommentData.data.permalink} target="_blank" className="open-in-reddit">
                 <RedditIcon />
@@ -143,7 +202,8 @@ const Comment = ({ commentData, commentDepth }) => {
           </div>
         </div>
         {finalCommentData.data.replies ? (
-          <div className={IsRefreshingComment ? "replies-container is-refreshing-comment" : "replies-container"}>
+          // <div className={IsRefreshingComment ? "replies-container is-refreshing-comment" : "replies-container"}>
+          <div className={IsRefreshingComment ? "replies-container" : "replies-container"}>
             <div className="replies">
               <div className="replies-inner">
                 {finalCommentData.data.replies.data.children.map((reply, replyIndex) =>
@@ -168,12 +228,12 @@ const Comment = ({ commentData, commentDepth }) => {
   );
 };
 
-const App = () => {
+const Comments = () => {
   const [comments, setComments] = useState([]);
 
   const getComments = () => {
     // console.log("GETTING COMMENTS");
-    fetch(`https://www.reddit.com/${window.location.pathname}.json?raw_json=1&limit=100&sort=new`, { cache: "no-store" })
+    fetch(`https://www.reddit.com${window.location.pathname}.json?raw_json=1&limit=100&sort=new`, { cache: "no-store" })
       .then((response) => response.json())
       .then((json) => {
         setComments((prev) => {
@@ -204,7 +264,7 @@ const App = () => {
             })
             .reverse()
             .map((e, i) => {
-              return { ...e, IsNew: true, index: i };
+              return { ...e, IsNew: true };
             });
           const tempPrev = prev.map((e) => {
             return { ...e, IsNew: false };
@@ -293,6 +353,12 @@ const App = () => {
       if (document.activeElement.tagName === "TEXTAREA") return;
       if (document.activeElement.getAttribute("contenteditable")) return;
 
+      if (keydownEvent.key === "e" || keydownEvent.key === "E") {
+        const comments = [...document.querySelectorAll(".comment")];
+        const currentComment = comments.filter((comment) => comment.getBoundingClientRect().bottom > 15).at(0);
+        currentComment.querySelector(".open-in-reddit").click();
+      }
+
       if (!["f", "r", "F", "R"].includes(keydownEvent.key)) return;
       keydownEvent.preventDefault();
 
@@ -307,12 +373,14 @@ const App = () => {
       if (keydownEvent.key === "f" || keydownEvent.key === "F") {
         const filteredComments = comments.filter((comment) => comment.getBoundingClientRect().top > offset + 5);
         if (!filteredComments.at(0)) return;
-        $("html, body").animate({ scrollTop: filteredComments.at(0).offsetTop - 15 }, 150);
+        filteredComments.at(0).scrollIntoView({ behavior: "smooth" });
+        // $("html, body").animate({ scrollTop: filteredComments.at(0).offsetTop - 15 }, 150);
       }
       if (keydownEvent.key === "r" || keydownEvent.key === "R") {
         const filteredComments = comments.filter((comment) => comment.getBoundingClientRect().top < offset - 5);
         if (!filteredComments.at(-1)) return;
-        $("html, body").animate({ scrollTop: filteredComments.at(-1).offsetTop - 15 }, 150);
+        filteredComments.at(-1).scrollIntoView({ behavior: "smooth" });
+        // $("html, body").animate({ scrollTop: filteredComments.at(-1).offsetTop - 15 }, 150);
       }
     };
     let interval;
@@ -339,8 +407,31 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const int = setInterval(() => {
+      [...document.querySelectorAll(".comments > .comment-container")]
+        .filter((e) => {
+          const bcr = e.getBoundingClientRect();
+          const t = bcr.top;
+          const b = bcr.bottom;
+          const h = window.innerHeight;
+          if (t > 0 && b < h + 200) return true;
+        })
+        .reverse()
+        .slice(0, 12)
+        .forEach((e) => {
+          const btn = e.querySelector(".refresh-comment");
+          btn.click();
+        });
+    }, 5000);
+
+    return () => {
+      clearInterval(int);
+    };
+  }, []);
+
   return (
-    <div className="App">
+    <>
       {comments.length > 0 ? (
         <div className="comments">
           {comments.map((commentData, commentDataIndex) => {
@@ -355,6 +446,108 @@ const App = () => {
         <div className="loading">--- No comments to load, Yet ---</div>
       )}
       <div className="refresh-alert">--- Refreshes about every 3 to 5 seconds ---</div>
+    </>
+  );
+};
+
+const Subreddit = () => {
+  const subName = useParams().subreddit;
+  const sort = useParams().sort;
+  const path = window.location.pathname;
+
+  const [postsData, setPostsData] = useState([]);
+  const [nextPageID, setNextPageID] = useState("");
+
+  useEffect(() => {
+    fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=50`, { cache: "no-store" })
+      .then((response) => response.json())
+      .then((json) => {
+        setNextPageID(json.data.after);
+        setPostsData(json.data.children);
+        // setPostsData((prev) => [...prev, ...json.data.children]);
+      });
+
+    return () => setPostsData([]);
+  }, []);
+
+  const [IsFetching, setIsFetching] = useState(false);
+  const onClick = () => {
+    setIsFetching(true);
+  };
+  useEffect(() => {
+    if (IsFetching) {
+      fetch(`https://www.reddit.com${path}.json?raw_json=1&limit=50&after=${nextPageID}`, { cache: "no-store" })
+        .then((response) => response.json())
+        .then((json) => {
+          setNextPageID(json.data.after);
+          // setPostsData(json.data.children);
+          setPostsData((prev) => [...prev, ...json.data.children]);
+          setIsFetching(false);
+        });
+    }
+  }, [IsFetching]);
+
+  const [filterMatchThreads, setFilterMatchThreads] = useState(false);
+
+  return postsData.length > 0 ? (
+    <div className="posts">
+      <div className="header">
+        <div className="sub-name">{subName}</div>
+        <div className="toolbar">
+          <div className="sort-sub">
+            <a className={sort === "hot" || sort === undefined ? "sort active" : "sort"} href={`/r/${subName}/hot`}>
+              Hot
+            </a>
+            <a className={sort === "new" ? "sort active" : "sort"} href={`/r/${subName}/new`}>
+              New
+            </a>
+          </div>
+          <div className="filter-match-threads" onClick={() => setFilterMatchThreads((e) => !e)}>
+            {filterMatchThreads ? "✅ " : ""} Fliter Match Threads
+          </div>
+        </div>
+      </div>
+      {(filterMatchThreads ? postsData.filter((postData) => /match thread|post match thread|post day thread/.test(postData.data.title.toLowerCase())) : postsData).map((postData, postDataIndex) => {
+        return (
+          <div className="post" key={postDataIndex}>
+            <a href={postData.data.permalink} className="title">
+              {postData.data.title}
+            </a>
+            <div className="footer">
+              <div className="comments-num">{postData.data.num_comments} comments</div>
+              <div className="created">
+                <div className="original">{timeAgo(postData.data.created * 1000)} ago</div>
+                {postData.data.edited ? <div className="edited">(edited {timeAgo(postData.data.edited * 1000)} ago)</div> : ""}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      {IsFetching ? (
+        <div className="fetching-alert">Fetching 50 more posts</div>
+      ) : (
+        <div className="load-more-posts" onClick={onClick}>
+          Load 50 more posts
+        </div>
+      )}
+    </div>
+  ) : (
+    <div className="loading">--- No posts to load, Yet ---</div>
+  );
+};
+
+const App = () => {
+  return (
+    <div className="App">
+      <Routes>
+        <Route path="r/:subreddit" element={<Subreddit />} />
+        <Route path="r/:subreddit/:sort" element={<Subreddit />} />
+        <Route path="r/:subreddit/comments/:postId/:postString" element={<Comments />} />
+        <Route path="*" element="404. check url" />
+      </Routes>
+      {/* {subWithSortRegex.test(path) && ["new", "hot"].includes(path.split("/").at(-2)) ? <Subreddit sort={path.split("/").at(-2)} /> : ""}
+      {commentsRegex.test(path) ? <Comments /> : ""}
+      {!subRegex.test(path) && !subWithSortRegex.test(path) && !["new", "hot"].includes(path.split("/").at(-2)) && !commentsRegex.test(path) ? "404 wrong url probably" : ""} */}
     </div>
   );
 };

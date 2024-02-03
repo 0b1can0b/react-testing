@@ -11,10 +11,14 @@
   },
   "dependencies": {
     "jquery": "^3.7.1",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
     "sass": "^1.70.0",
-    "snoowrap": "^1.23.0"
+    "snoowrap": "^1.23.0",
+    "sort-by": "^1.2.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",

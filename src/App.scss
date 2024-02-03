@@ -15,11 +15,11 @@ a {
   gap: 25px;
   line-height: 1;
   font-size: 15px;
-  padding-bottom: 100px;
+  // padding-bottom: 100px;
 
-  @media (max-width: 800px) {
-    zoom: 0.85;
-  }
+  // @media (max-width: 800px) {
+  //   zoom: 0.85;
+  // }
 
   > .loading,
   > .refresh-alert {
@@ -27,6 +27,100 @@ a {
     font-size: 20px;
     font-weight: 800;
     text-align: center;
+  }
+
+  > .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+    > .header {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      > .sub-name {
+        text-transform: capitalize;
+        font-size: 25px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      > .toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+
+        > .sort-sub {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          > .sort {
+            &.active {
+              outline: 1px solid hsl(225 50% 70%);
+            }
+          }
+        }
+      }
+    }
+
+    > .header > .toolbar > .sort-sub > a,
+    > .header > .toolbar > .filter-match-threads,
+    > .load-more-posts {
+      background: hsl(225 25% 25%);
+      box-shadow: 0 0 15px -10px #000;
+      padding: 10px 15px;
+      font-size: 20px;
+      align-self: center;
+      font-weight: 800;
+
+      cursor: pointer;
+      transition: 0.15s ease-out;
+      &:hover {
+        background: hsl(225 25% 35%);
+      }
+    }
+
+    > .fetching-alert {
+      text-transform: capitalize;
+      font-size: 20px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    > .post {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: start;
+
+      > .title {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.25;
+
+        transition: 0.15s ease-out;
+        &:hover {
+          color: hsl(225 100% 75%);
+        }
+      }
+
+      .footer {
+        display: flex;
+        gap: 25px;
+
+        .created {
+          display: flex;
+          gap: 5px;
+
+          .origial {
+          }
+          .edited {
+          }
+        }
+      }
+    }
   }
 
   > .comments {
@@ -49,6 +143,8 @@ a {
       }
 
       &.is-new {
+        filter: saturate(1.25) brightness(1.25);
+
         display: grid;
         // transition: 0.15s ease-out;
         // animation: grid-ani 0.25s linear forwards;
@@ -115,14 +211,14 @@ a {
               display: flex;
               align-items: center;
               justify-content: end;
-              gap: 5px 25px;
+              gap: 5px 15px;
               padding: 5px 10px;
               background-color: hsl(calc(var(--depth) * var(--color-jump) + var(--starting-color)) 20% 22.5%);
               flex-wrap: wrap;
 
-              @media (max-width: 800px) {
-                zoom: 0.75;
-              }
+              // @media (max-width: 800px) {
+              //   zoom: 0.75;
+              // }
 
               > .user {
                 display: flex;
@@ -133,9 +229,9 @@ a {
 
                 > .name {
                   color: hsl(225 100% 95%);
-                  font-weight: 800;
+                  font-weight: 600;
                   font-size: 17.5px;
-                  text-shadow: 0 0 10px hsl(calc(var(--depth) * var(--color-jump) + var(--starting-color)) 100% 50%);
+                  // text-shadow: 0 0 10px hsl(calc(var(--depth) * var(--color-jump) + var(--starting-color)) 100% 50% / 50%);
                 }
                 > .flair {
                   display: flex;
@@ -193,7 +289,7 @@ a {
 
                 > .upvote,
                 > .downvote {
-                  --s: 15px;
+                  --s: 10px;
                   width: var(--s);
                   height: var(--s);
                 }
@@ -209,6 +305,7 @@ a {
                   color: hsl(225 25% 85%);
                   font-family: JetBrains Mono;
                   translate: 0 0.5px;
+                  transition: 0.5s ease-out;
                 }
                 > .downvote {
                   border-left: calc(var(--s) / 2) solid transparent;
@@ -225,9 +322,11 @@ a {
 
                 > .origial {
                   color: hsl(225 15% 75%);
+                  transition: 0.5s ease-out;
                 }
                 > .edited {
                   color: hsl(225 15% 65%);
+                  transition: 0.5s ease-out;
                 }
               }
               > .open-in-reddit {
@@ -241,7 +340,9 @@ a {
             }
             > .body {
               padding: 0 10px;
+
               > .md {
+                font-size: 17.5px;
                 font-weight: 400;
                 line-height: 1.25;
                 color: hsl(225 15% 90%);

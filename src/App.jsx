@@ -540,24 +540,20 @@ const Home = () => {
   return (
     <div className="home">
       <p>
-        this is homepage, there's nothing in it except this text. <a href="/r/cricket">go to /r/cricket</a> or type any /r/subreddit in url bar
+        This is homepage, there's nothing in it except this text. <a href="/r/cricket">go to /r/cricket</a> or type any /r/subreddit in url bar to start using this
       </p>
-
-      <p>there are sort buttons (new, hot) to sort the subreddit posts, the comments will always be sorted by new (cause you know... "live-thread")</p>
-
-      <p>it would get new comments every (3 seconds + the time to fetch the request) so thats around 3.5 to 4.5 seconds</p>
-
+      <p>There are sort buttons (new, hot) to sort the subreddit posts, the comments will always be sorted by new (cause you know... "live-thread")</p>
+      <p>There is also a filter only match threads button that would only keep the post that have "Match Thread"/"Post Match Thread"/"Post Day Thread" text in the title</p>
+      <p>It would get new comments every (3 seconds + the time to fetch the request) so thats around 3.5 to 4.5 seconds</p>
       <p>the comments that are in the view would keep refreshing every 5 seconds so we don't have to keep pressing the refresh button</p>
-
-      <p>keyboard navigation is available as well. "f" for next comment, "r" for previous and "e" would open the first comment visible in normal "reddit.com" so you can reply or vote there</p>
-
+      <p>Very new comments would be more saturated + brightened till other new comments are fetched so you would notice them quickly</p>
+      <p>Keyboard navigation is available as well. "f" for next comment, "r" for previous and "e" would open the first comment visible in normal "reddit.com" so you can reply or vote there</p>
       <p>"if" you see a blank page it means that it's some bug and i didn't map data correctly :/</p>
-
       <p>or if it was working just fine and suddenly shows blank page and it keeps showing blank page for few minutes then reddit might have rate limited you, i think it undoes that in few minutes... but this should only happen if we're making too many requests per second (currently i check it's somewhat 80-100 per minute and i haven't seen issues so it should be fine)</p>
+      <p>And there are sometimes duplicate replies for half a second and it gets updated, this is a bug that i for some damn reason can't find reason for, but it's only about half a second so it shouldn't be a big issue</p>
+      <p>Also reload the page once a while if you're not planning on reading older comments, just so there aren't like 1000 comments at the same time (for performance's sake)</p>
 
-      <p>also reload the page once a while if you're not planning on reading older comments, just so there aren't like 1000 comments at the same time (for performance's sake)</p>
-
-      <p>thanks :)</p>
+      <p>Thanks :)</p>
     </div>
   );
 };
